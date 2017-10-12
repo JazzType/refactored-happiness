@@ -13,7 +13,7 @@ class PokerServer:
         self.BUT_START = mygui.Button()
 
     def gui(self, screen, isButton):
-        screen.blit(BG0, (0,0)) #Set background image
+        screen.blit(BG0, (0,0)) # Set background image
 
         screen.blit(self.TXT_SERVER, self.TXT_SERVER_RECT)
         screen.blit(self.TXT_IP, self.TXT_IP_RECT)
