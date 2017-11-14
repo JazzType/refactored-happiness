@@ -1,6 +1,7 @@
-import pygame, mygui
+#import pygame, mygui
 
-WIDTH, HEIGHT = map(int, raw_input("Enter the resolution: ").split())
+WIDTH = 640
+HEIGHT = 480
 
 CAPTION = "Poker"
 
@@ -13,7 +14,7 @@ BACK_SCREEN = 60, 60, 100
 BACK_BUTTON= 192, 192, 192
 TEXT_BUTTON= 0, 0, 0
 
-INITMONEY = int(input("Enter the initial points: "))
+INITMONEY = 1000
 
 TABLESCALE = 2
 PICSIZE = (100, 100)
@@ -22,18 +23,18 @@ CARDLENIMG = 43
 CARDWIDIMG = 62
 CARDLEN = 36
 CARDWID = 49
-CARDS= pygame.image.load("images/cards.png")
+#CARDS= pygame.image.load("images/cards.png")
 
-BG0 = pygame.image.load("images/bg0.jpg")
-BG0 = pygame.transform.scale(BG0, (WIDTH, HEIGHT))
-BG1 = pygame.image.load("images/bg1.jpg")
-BG1 = pygame.transform.scale(BG1, (WIDTH, HEIGHT))
-PKT1 = pygame.image.load("images/pkt0.png")
-PKT1 = pygame.transform.scale(PKT1, (int(TABLESCALE*HEIGHT/2), HEIGHT/2)) #480 * 240
-SL1 = pygame.image.load("images/slider0.png")
-SL1 = pygame.transform.scale(SL1, (200,4))
-SL2 = pygame.image.load("images/slider1.png")
-SL2 = pygame.transform.scale(SL2, (39,20))
+#BG0 = pygame.image.load("images/bg0.jpg")
+#BG0 = pygame.transform.scale(BG0, (WIDTH, HEIGHT))
+#BG1 = pygame.image.load("images/bg1.jpg")
+#BG1 = pygame.transform.scale(BG1, (WIDTH, HEIGHT))
+#PKT1 = pygame.image.load("images/pkt0.png")
+#PKT1 = pygame.transform.scale(PKT1, (int(TABLESCALE*HEIGHT/2), HEIGHT/2)) #480 * 240
+#SL1 = pygame.image.load("images/slider0.png")
+#SL1 = pygame.transform.scale(SL1, (200,4))
+#SL2 = pygame.image.load("images/slider1.png")
+#SL2 = pygame.transform.scale(SL2, (39,20))
 
 PICSIZE = (int(HEIGHT/4.8), int(HEIGHT/4.8)) # 100 * 100
 TBLTOPLEFT = (int(HEIGHT/6), int(HEIGHT/6)) # (80, 80)

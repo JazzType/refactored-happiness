@@ -1,16 +1,17 @@
-import sys, pygame, mygui, serverThread, serverGame, time, json, copy, main
-from pygame.locals import *
+#import sys, pygame, mygui, serverThread, serverGame, time, json, copy, main
+import sys, serverThread, serverGame, time, json, copy, main
+#from pygame.locals import *
 from constants import *
 from deck import *
 from player import *
 from result import *
 from operator import itemgetter
-from graphics import *
+#from graphics import *
 
 class ServerGame:
-    def __init__(self,clientSockets,screen):
+    def __init__(self,clientSockets):
         self.clientSockets = clientSockets
-        self.screen = screen
+        #self.screen = screen
 
     #one match = several games, one game = 4 rounds
     def update_game(self, receivedBetValue):
@@ -39,7 +40,7 @@ class ServerGame:
 
             temp1 = (self.start + 1)%self.numberOfPlayers
             while self.players[temp1].isActive == False:
-                temp1 = (temp1 + 1)%self.numberOfPlayers
+                 temp1 = (temp1 + 1)%self.numberOfPlayers
 
             self.players[self.start].bet(self.smallBlind)
             self.players[temp1].bet(self.bigBlind)
@@ -72,14 +73,14 @@ class ServerGame:
             self.toCallAmount = self.currentRoundBet - self.players[self.serverTurn].currentRoundBet
             #self.maxBet = min(self.maxPlayerMoney,self.players[self.serverTurn].money)
 
-            self.before_move(self.screen)
+            self.before_move()
 
             if (not self.players[self.turn].fold) and self.players[self.turn].money != 0 and self.players[self.turn].isActive:
                 self.broadcast()
                 if self.turn == self.serverTurn:
-                    recievedBetValue = self.server_move(self.screen)    #server_move()
+                    recievedBetValue = self.server_move()    #server_move()
                 else:
-                    self.client_move(self.screen)
+                    self.client_move()
                     recievedBetValue = int(self.clientSockets[self.turn].recv(1024))     # wait for client to move
 
                 self.update_game(recievedBetValue)
@@ -88,7 +89,7 @@ class ServerGame:
             self.exPot = self.pot
             self.turn = (self.turn+1)%self.numberOfPlayers
 
-            self.after_move(self.screen)
+            self.after_move()
 
             if self.turn == self.lastRaisedPlayer or self.numberOfUnfoldedPlayers <= 1:
                 break
@@ -192,7 +193,7 @@ class ServerGame:
 
         self.turn = -1  #Added by safal
         self.broadcast()          # Final broadcast, broadcast result
-        self.after_move(self.screen)
+        self.after_move()
 
     def init_game(self):
         self.resultRating = 0
@@ -379,7 +380,7 @@ class ServerGame:
 
 
 
-    def before_move(self,screen):
+    def before_move(self,):
 		self.update_MONEY()
         
 		if not self.HANDBEGIN:
@@ -391,7 +392,7 @@ class ServerGame:
 
 			self.HANDBEGIN = True
 
-		self.update_screen(screen)
+		self.update_screen()
 
     def draw_init_cards(self, myCards, infoFlag):
 		if infoFlag == 0:
@@ -401,7 +402,7 @@ class ServerGame:
 			print myCards[1]
 
 
-    def server_move(self,screen):
+    def server_move(self):
 		maxPlayerMoney = 0
 		for j in self.activePlayers:
 			if not self.players[j].fold and j != self.serverTurn:
@@ -410,8 +411,10 @@ class ServerGame:
 
 
         #g.create_buttons(screen, self.toCallAmount) #Creating all 4 buttons
-	'''	if self.toCallAmount != 0:
-			print ''' # HAVE TO INCLUDE THIS
+        
+        #if self.toCallAmount != 0:
+		#	print 
+        # HAVE TO INCLUDE THIS
 		move_input = raw_input("[C]all $" + str(self.toCallAmount) + " , [f]old, [a]ll-in, [r]aise, [q]uit")
         #slider1 = mygui.Slider(screen,(450,450),(self.toCallAmount,self.maxBet))    #Creating the raise slider
 		
@@ -421,7 +424,7 @@ class ServerGame:
 
 		state = None
 		if move_input == "q" or move_input == "Q":
-			pygame.quit()
+			#pygame.quit()
 			sys.exit()
 
 		elif move_input == "c" or move_input == "C":
@@ -438,14 +441,14 @@ class ServerGame:
 			state = raiseValue               
 		return state
 
-    def client_move(self,screen):
+    def client_move(self):
         '''g.remove_buttons(screen)
         g.create_transparent_buttons(screen)
         g.slider_remove(screen)'''
 
-    def after_move(self,screen):
+    def after_move(self):
         if self.infoFlag == 10: 
-        	self.before_move(screen)
+        	self.before_move()
 
         if self.infoFlag != 10:
             return
@@ -466,7 +469,7 @@ class ServerGame:
 
 
 
-    def update_screen(self, screen):
+    def update_screen(self):
 
         #print "Turn ", self.turn, "ExTurn ", self.exTurn
         print "new turn"
@@ -539,13 +542,13 @@ def unpause_clients(clientSockets):
         obj.send("begin")
 
 
-def main(screen, clientSockets):
+def main(clientSockets):
     #clients = [1,2,3]
 
     unpause_clients(clientSockets)
     #print "Inside serverGame file : Method main()"
 
-    game = ServerGame(clientSockets,screen)
+    game = ServerGame(clientSockets)
     game.start_game()
 
     time.sleep(5)

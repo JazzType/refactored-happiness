@@ -1,10 +1,11 @@
-import sys, pygame, mygui, clientThread, time, clientGame
-from pygame.locals import *
+#import sys, pygame, mygui, clientThread, time, clientGame
+import sys, clientThread, time, clientGame
+#from pygame.locals import *
 from constants import *
 
 class PokerClient:
 
-    def __init__(self, screen):
+    def __init__(self):
 
         
    	print ("Client")
@@ -18,8 +19,8 @@ class PokerClient:
 
         if serPort =="":
            serPort = "1234"
-        cliObj = clientThread.ClientThread(str(serIP),int(serPort),screen)
+        cliObj = clientThread.ClientThread(str(serIP),int(serPort))
 	begin = cliObj.sock.recv(1024)
         if begin == "begin":
            print "Unpaused"
-           clientGame.ClientGame(cliObj.sock, screen)
+           clientGame.ClientGame(cliObj.sock)

@@ -46,7 +46,7 @@ class ServerThread(object):
 
 	def get_ip(self):
 			s = socket(AF_INET, SOCK_DGRAM)
-			s.connect(('8.8.8.8', 0))
+			#s.connect(('8.8.8.8', 0))
 			return s.getsockname()[0]
 
 	def get_port(self):

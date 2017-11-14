@@ -3,7 +3,7 @@ import serverGame
 
 
 class PokerServer:
-	def __init__(self, screen):
+	def __init__(self):
 		# Obtain a thread for the server room
 		self.serverRoom = serverThread.ServerThread()
 		self.setupFinished = False
@@ -18,7 +18,7 @@ class PokerServer:
 			if choice == 's' or choice == 'S':
 				self.setupFinished = True
 
-		serverGame.main(screen, self.serverRoom.clients)
+		serverGame.main(self.serverRoom.clients)
 
 
 if __name__ == "__main__":
