@@ -57,7 +57,7 @@ class ClientGame:
 		print '========================='
 		for x in self.myCards:
 			if x[0] == 'S':
-				print 'Spade   : ', u'\u2660',  
+				print 'Spade   : ', u'\u2660',
 			elif x[0] == 'H':
 				print 'Heart   : ', u'\u2665',
 			elif x[0] == 'D':
@@ -80,7 +80,7 @@ class ClientGame:
 		print '-------------------------'
 		for x in self.tableCards:
 			if x[0] == 'S':
-				print 'Spade   : ', u'\u2660',  
+				print 'Spade   : ', u'\u2660',
 			elif x[0] == 'H':
 				print 'Heart   : ', u'\u2665',
 			elif x[0] == 'D':
@@ -136,15 +136,15 @@ class ClientGame:
 			#g.init_gui( self.myTurn, self.turn, self.numberOfPlayers, self.myCards, self.infoFlag, self.MONEY, self.NAMES, self.ROUNDBET)
 			self.update_screen()
 
-			move_input = raw_input("[C]all $" + str(self.toCallAmount) + " , [f]old, [a]ll-in, [r]aise, [q]uit")
-
-
-
-					 
-
-
-
 			if self.myTurn == self.turn:
+				move_input = raw_input("[C]all $" + str(self.toCallAmount) + " , [f]old, [a]ll-in, [r]aise, [q]uit")
+
+
+
+
+
+
+
 
 				#g.create_buttons(self.toCallAmount) #Creating all 4 buttons
 				#slider1 = mygui.Slider(screen,(450,450),(self.toCallAmount, self.maxBet))    #Creating the raise slider
@@ -172,7 +172,7 @@ class ClientGame:
 
 				elif move_input == "r" or move_input == "R":
 					raiseValue = int(raw_input("enter a no between "+str(self.toCallAmount)+" and "+str(self.maxBet) + ": "))
-					state = raiseValue  
+					state = raiseValue
 
 				#Mouse Hover handling
 				#g.mouse_hover(self.toCallAmount)
@@ -199,7 +199,7 @@ class ClientGame:
 
 			#g.end_hand(screen, self.infoFlag, self.winners, self.winCards, self.resultRating)   #Result and winner display
 			#pygame.display.update()
-	
+
 	def update_screen(self):
 
 		print "Turn ", self.turn, "ExTurn ", self.exTurn

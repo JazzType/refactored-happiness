@@ -2,6 +2,7 @@
 #from pygame.locals import *
 from constants import *
 import ServerSide, ClientSide
+import sys
 
 class Begin:
 
@@ -37,7 +38,7 @@ class Begin:
                 if event.type == QUIT:
                     #pygame.quit()
                     sys.exit()
-                
+
                 elif event.type == MOUSEBUTTONDOWN:
                     if self.BUT_SERVER.pressed(pygame.mouse.get_pos()):
                         state = 1
@@ -68,4 +69,9 @@ class Begin:
 
 
 if __name__ == '__main__':
-    Begin()
+    if len(sys.argv) == 1:
+        Begin()
+    elif sys.argv[1] == '--server':
+        ServerSide.PokerServer()
+    elif sys.argv[1] == '--client':
+        ClientSide.PokerClient()
