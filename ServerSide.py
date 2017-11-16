@@ -12,7 +12,7 @@ class PokerServer:
 		print 'Room {0}:{1}'.format(self.serverRoom.get_ip(), self.serverRoom.get_port())
 
 		while not self.setupFinished:
-			print '\r{:2} clients connected | [q]uit, [u]pdate or [s]tart > '.format(self.serverRoom.get_num_of_clients())
+			print '\r{:2} clients connected | [q]uit, [u]pdate or [s]tart > '.format(self.serverRoom.get_num_of_clients()),
 			choice = raw_input().strip()
 			if choice == 'q' or choice == 'Q':
 				sys.exit()

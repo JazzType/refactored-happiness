@@ -1,6 +1,7 @@
 from socket import *
 from thread import *
 import time
+import sys
 
 
 class ClientThread(object):
@@ -13,6 +14,8 @@ class ClientThread(object):
 					self.sock.connect((host, port))
 			except Exception as msg:
 					print "Could not connect to server.\nError msg : ", msg
+					sys.exit()
+
 
 	def client_thread(self):
 			# Infinite loop to keep client running.

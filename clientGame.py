@@ -1,7 +1,6 @@
 import sys
 import player
 import json
-import main
 import os
 
 
@@ -11,6 +10,9 @@ def cls():
 
 def print_cards(cards):
 	print '========================='
+	if len(cards) == 0:
+		print None
+		return
 	for x in cards:
 		if x[0] == 'S':
 			print 'Spade   : ', u'\u2660',
@@ -67,7 +69,8 @@ class ClientGame:
 		self.winCards = self.things[5]
 		self.maxBet = self.things[6]
 		self.resultRating = int(self.things[7])
-		print 'Your Cards'
+		cls()
+		print 'Your Cards', ' ' * 11
 		print_cards(self.myCards)
 		print 'Table Cards'
 		print_cards(self.tableCards)
@@ -99,9 +102,9 @@ class ClientGame:
 		while True:
 			wonHand = self.recv(clientSocket)
 			if wonHand is True:
-				print "You won this hand!"
+				print 'You won this hand!    '
 			self.update_game()
-
+			print 'Please wait your turn.\r',
 			if self.myTurn == self.turn:
 				move_input = raw_input("[c]all $" + str(self.toCallAmount) + " , [f]old, [a]ll-in, [r]aise, [q]uit > ")
 				state = None

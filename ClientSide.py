@@ -1,7 +1,5 @@
 import clientThread
 import clientGame
-import sys
-import socket
 
 
 class PokerClient:
@@ -15,17 +13,8 @@ class PokerClient:
 
 			print "Connecting to {}:{}..".format(serIP, serPort),
 
-			try:
-				cliObj = clientThread.ClientThread(str(serIP), int(serPort))
-			except Exception:
-				print("Failed.\nUnable to establish connection to server, please try again.")
-				sys.exit()
-
-			try:
-				begin = cliObj.sock.recv(1024)
-			except socket.error:
-				print 'Failed. Is the server running?'
-				sys.exit()
+			cliObj = clientThread.ClientThread(str(serIP), int(serPort))
 			print("Done.\nPlease wait for the game to start.")
+			begin = cliObj.sock.recv(1024)
 			if begin == "begin":
 				clientGame.ClientGame(cliObj.sock)

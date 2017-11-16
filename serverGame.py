@@ -153,7 +153,7 @@ class ServerGame:
 		self.start_round()
 
 		self.infoFlag = 10  # Result 10
-		# print "Hand completed"
+		print "Hand complete."
 		self.fin_hand()
 
 	def fin_hand(self):
@@ -227,7 +227,6 @@ class ServerGame:
 			msgPlayerCards = json.dumps(self.cards[cSock])
 			msgPlayers = json.dumps(self.players, default=lambda o: o.__dict__)
 			msgTableCards = json.dumps(self.tableCards)
-			print msgTableCards
 			toCallAmount = self.currentRoundBet - \
 				self.players[i].currentRoundBet
 			things = (
@@ -348,7 +347,7 @@ class ServerGame:
 			self.players[i].money += moneyToGive[i]
 			self.players[i].money = int(self.players[i].money)
 
-		self.pot = 0
+		# self.pot = 0
 
 		self.winCards = self.cards[self.handWinners[0]]
 		self.resultRating = handStrengths[0][1]
@@ -374,7 +373,7 @@ class ServerGame:
 		if infoFlag == 0:
 			clientGame.cls()
 			print "\nNew Hand"
-			print clientGame.print_cards(myCards)
+			clientGame.print_cards(myCards)
 
 	def server_move(self):
 		maxPlayerMoney = 0
@@ -418,7 +417,7 @@ class ServerGame:
 		print "Hand complete!"
 
 		if self.handWinners[0] == len(self.clientSockets):
-			print 'You won this hand!'
+			print 'You won this hand!    '
 
 		else:
 			try:
@@ -434,30 +433,27 @@ class ServerGame:
 	def update_screen(self):
 		if self.infoFlag == 1:
 			if not self.CARDDRAWN[0]:
-				print 'TableCards len: ', len(self.tableCards)
-				clientGame.print_cards(self.tableCards[0])
-				print self.tableCards[1]
-				print self.tableCards[2]
+				print 'TableCards: ', self.tableCards
+				clientGame.print_cards(self.tableCards)
 				self.CARDDRAWN[0] = True
 
 		elif self.infoFlag == 2:
 			if not self.CARDDRAWN[1]:
-				print self.tableCards[3]
+				clientGame.print_cards([self.tableCards[3]])
 				self.CARDDRAWN[1] = True
 
 		elif self.infoFlag == 3:
 			if not self.CARDDRAWN[2]:
-				print self.tableCards[4]
+				clientGame.print_cards([self.tableCards[4]])
 				self.CARDDRAWN[2] = True
 
 		elif self.infoFlag == 10:
-			for i in range(5):
-				print self.tableCards[i]
+			clientGame.print_cards(self.tableCards)
 			for i in range(3):
 				self.CARDDRAWN[i] = True
 
 		# Display pot
-		print "pot : " + str(self.pot)
+		print "Round Pot : " + str(self.roundPot)
 
 	def update_MONEY(self):
 
