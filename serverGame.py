@@ -1,5 +1,4 @@
 import sys
-import pygame
 import time
 import json
 from constants import *
@@ -7,7 +6,6 @@ from deck import *
 from player import *
 from result import *
 from operator import itemgetter
-from graphics import *
 
 
 class ServerGame:
@@ -81,8 +79,15 @@ class ServerGame:
 					recievedBetValue = self.server_move()  # server_move()
 				else:
 					self.client_move()
-					recievedBetValue = int(self.clientSockets[self.turn].recv(
+					recievedBetValue = 0
+					try:
+						recievedBetValue = int(self.clientSockets[self.turn].recv(
 						1024))     # wait for client to move
+					except ValueError:
+						recievedBetValue = -1
+					except IndexError:
+						print 'Insufficient number of players, terminating game'
+						sys.exit()
 
 				self.update_game(recievedBetValue)
 
@@ -261,8 +266,12 @@ class ServerGame:
 				"::" + msgThings + "::" + msgWinners
 			i += 1
 			# print completeMessage
+			try:
+				cSock.send(completeMessage)
+			except Exception:
+				print 'Player {} quit'.format(self.clientSockets.index(cSock) + 1)
+				self.clientSockets.__delitem__(self.clientSockets.index(cSock))
 
-			cSock.send(completeMessage)
 			# print "Size of message sent : "+ str(sys.getsizeof(completeMessage)) +" bytes!"
 
 	def hand_result(self):
@@ -411,7 +420,6 @@ class ServerGame:
 
 		state = None
 		if move_input == "q" or move_input == "Q":
-			pygame.quit()
 			sys.exit()
 
 		elif move_input == "c" or move_input == "C":
@@ -430,9 +438,7 @@ class ServerGame:
 		return state
 
 	def client_move(self):
-		'''g.remove_buttons(screen)
-		g.create_transparent_buttons(screen)
-		g.slider_remove(screen)'''
+		pass
 
 	def after_move(self):
 		if self.infoFlag == 10:
@@ -443,6 +449,11 @@ class ServerGame:
 
 		print "Hand completed!"
 		print "Winners are : " + str(self.handWinners)
+
+		if self.handWinners[0] == len(self.clientSockets):
+			print 'You won this hand!'
+		else:
+			self.clientSockets[self.handWinners[0]].send('::')
 		self.HANDBEGIN = False
 
 		time.sleep(4)
@@ -525,7 +536,6 @@ def main(clientSockets):
 	game.start_game()
 
 	time.sleep(5)
-	pygame.quit()
 	sys.exit()
 
 	# init(clientSockets)

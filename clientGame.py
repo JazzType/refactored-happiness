@@ -29,6 +29,8 @@ class ClientGame:
 			sys.exit()
 
 		data = jsonData.split("::")
+		if data[0] == '':
+			return True
 		jsonCards = data[0]
 		self.exTurn = self.turn  #Keeping last player's turn
 		self.myTurn = int(data[1])
@@ -99,8 +101,7 @@ class ClientGame:
 				print 'A'
 		print '========================='
 
-		print 'turn : ', self.turn
-		#cls()
+		cls()
 
 		jsonPlayers = json.loads(jsonPlayers)
 		self.players = {0:[]}
@@ -130,31 +131,14 @@ class ClientGame:
 
 		while 1:
 
-			self.recv(clientSocket)
+			wonHand = self.recv(clientSocket)
+			if wonHand is True:
+				print "You won this hand!"
 			self.update_game()
-			#g.order_players(self.myTurn, self.numberOfPlayers)
-			#g.init_gui( self.myTurn, self.turn, self.numberOfPlayers, self.myCards, self.infoFlag, self.MONEY, self.NAMES, self.ROUNDBET)
 			self.update_screen()
 
 			if self.myTurn == self.turn:
 				move_input = raw_input("[C]all $" + str(self.toCallAmount) + " , [f]old, [a]ll-in, [r]aise, [q]uit")
-
-
-
-
-
-
-
-
-				#g.create_buttons(self.toCallAmount) #Creating all 4 buttons
-				#slider1 = mygui.Slider(screen,(450,450),(self.toCallAmount, self.maxBet))    #Creating the raise slider
-
-				#pygame.display.update() #Displaying the buttons
-
-
-				#Slider event handle
-				#slider1.event_slider(event, pygame.mouse.get_pos())
-				#slider1.slider_update(screen)
 				print '@@@@@@@@@@@@@@@@@@'
 				state = None
 				if move_input == "q" or move_input == "Q":
@@ -174,52 +158,21 @@ class ClientGame:
 					raiseValue = int(raw_input("enter a no between "+str(self.toCallAmount)+" and "+str(self.maxBet) + ": "))
 					state = raiseValue
 
-				#Mouse Hover handling
-				#g.mouse_hover(self.toCallAmount)
 				print self.toCallAmount, '_____________'
-				#Mouse click handling
-				#isSend, state = g.mouse_click(screen, event, self.toCallAmount, self.maxBet, slider1.getValue())
-				#print '************', slider1.getValue()
-				#print state, '$$$$$$$$$$$$', isSend,'****#######'
-				#Sending data if button clicked
 				data = clientSocket.send(str(state))
 				if not data:
 					print "Server not receiving data.\nRestarting Game."
 					main.Begin()
 					sys.exit()
 
+				else:
+					print data
 
 			else:
 				pass
-				#g.remove_buttons()
-				#g.()
-				#g.slider_remove(screen)
-
-				#pygame.display.update()
-
-			#g.end_hand(screen, self.infoFlag, self.winners, self.winCards, self.resultRating)   #Result and winner display
-			#pygame.display.update()
 
 	def update_screen(self):
-
-		print "Turn ", self.turn, "ExTurn ", self.exTurn
-
-		#g.draw_boy(screen, self.turn, self.myTurn, self.turn)    #Redrawing the current player's image
-		#g.draw_boy_box(screen, self.turn, self.MONEY[self.turn], self.NAMES[self.turn])    #Redrawing current player's text box
-
-		#g.draw_boy(screen, self.exTurn, self.myTurn, self.turn)   #Redrawing the last player's image
-		#g.draw_boy_box(screen, self.exTurn, self.MONEY[self.exTurn], self.NAMES[self.exTurn])   #Redrawing the last player's text box
-
-		for i in range(self.numberOfPlayers):
-			pass
-			#g.draw_boy_bet(screen, i, self.ROUNDBET[i])    #Draw every player's current round bet.
-
-		#g.draw_table_cards(screen, self.infoFlag, self.tableCards)    #Draw the cards to be placed on table.
-
-		#Display pot
-		if self.pot>0 and self.pot-self.exPot>0:
-			pass
-			#g.pot_animation( self.pot)
+		pass
 
 	def update_game(self):
 		self.MONEY = []
