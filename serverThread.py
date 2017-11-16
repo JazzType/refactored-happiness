@@ -2,6 +2,7 @@ from socket import *
 from thread import *
 import time
 import sys
+import random
 
 
 class ServerThread(object):
@@ -12,7 +13,7 @@ class ServerThread(object):
 			# Defining server address and port
 			self.host = ''
 			# Use port > 1024, below it all are reserved
-			self.port = 1221
+			self.port = random.randint(1024, 10000)
 
 			# Creating socket object
 			sock = socket()

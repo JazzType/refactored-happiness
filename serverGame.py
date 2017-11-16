@@ -431,29 +431,13 @@ class ServerGame:
 		time.sleep(4)
 
 	def update_screen(self):
-		if self.infoFlag == 1:
-			if not self.CARDDRAWN[0]:
-				print 'TableCards: ', self.tableCards
-				clientGame.print_cards(self.tableCards)
-				self.CARDDRAWN[0] = True
-
-		elif self.infoFlag == 2:
-			if not self.CARDDRAWN[1]:
-				clientGame.print_cards([self.tableCards[3]])
-				self.CARDDRAWN[1] = True
-
-		elif self.infoFlag == 3:
-			if not self.CARDDRAWN[2]:
-				clientGame.print_cards([self.tableCards[4]])
-				self.CARDDRAWN[2] = True
-
-		elif self.infoFlag == 10:
-			clientGame.print_cards(self.tableCards)
-			for i in range(3):
-				self.CARDDRAWN[i] = True
-
+		clientGame.cls()
+		print 'Your Cards', ' ' * 11
+		clientGame.print_cards(self.myCards)
+		print 'Table Cards'
+		clientGame.print_cards(self.tableCards)
 		# Display pot
-		print "Round Pot : " + str(self.roundPot)
+		print "Round Pot : " + str(0 if self.roundPot <= 30 else self.roundPot - 30), '\r',
 
 	def update_MONEY(self):
 
