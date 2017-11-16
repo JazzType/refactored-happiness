@@ -1,7 +1,7 @@
 from socket import *
 from thread import *
 import time
-import main
+import sys
 
 
 class ServerThread(object):
@@ -10,11 +10,9 @@ class ServerThread(object):
 			self.clients = []
 
 			# Defining server address and port
-			# 'localhost' or '127.0.0.1' or '' are all same
-			self.host = '127.0.0.1'
-			self.host = self.get_ip()
+			self.host = ''
 			# Use port > 1024, below it all are reserved
-			self.port = 1234
+			self.port = 1221
 
 			# Creating socket object
 			sock = socket()
@@ -22,14 +20,12 @@ class ServerThread(object):
 			# Binding socket to a address. bind() takes tuple of host and port.
 			try:
 				sock.bind((self.host, self.port))
-			except Exception as msg:
-					print "Could not start server.\n", msg
-					print "Restarting the game."
-					main.Begin()
+			except Exception:
+					print "Could not start server.\n"
 					sys.exit()
 
 		# Listening at the address, 5 denotes the number of clients can queue
-			sock.listen(5)
+			sock.listen(12)
 
 			start_new_thread(self.server_thread, (sock, ))
 
@@ -46,7 +42,6 @@ class ServerThread(object):
 
 	def get_ip(self):
 			s = socket(AF_INET, SOCK_DGRAM)
-			#s.connect(('8.8.8.8', 0))
 			return s.getsockname()[0]
 
 	def get_port(self):
@@ -58,7 +53,6 @@ class ServerThread(object):
 	def client_thread(self, conn, addr):
 		# infinite loop so that function do not terminate and thread do not end.
 			while True:
-
 					# Receiving from client, 1024 stands for bytes of data to be received
 					data = conn.recv(1024)
 					if not data:

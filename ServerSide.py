@@ -1,5 +1,6 @@
 import serverThread
 import serverGame
+import sys
 
 
 class PokerServer:
@@ -14,7 +15,7 @@ class PokerServer:
 			print '\r{:2} clients connected | [q]uit, [u]pdate or [s]tart > '.format(self.serverRoom.get_num_of_clients())
 			choice = raw_input().strip()
 			if choice == 'q' or choice == 'Q':
-				self.serverRoom.end_room()
+				sys.exit()
 			if choice == 's' or choice == 'S':
 				self.setupFinished = True
 

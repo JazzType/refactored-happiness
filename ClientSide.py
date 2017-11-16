@@ -1,26 +1,31 @@
-#import sys, pygame, mygui, clientThread, time, clientGame
-import sys, clientThread, time, clientGame
-#from pygame.locals import *
-from constants import *
+import clientThread
+import clientGame
+import sys
+import socket
+
 
 class PokerClient:
+		def __init__(self):
+			serIP = raw_input("Enter IP (defaults to 0.0.0.0): ")  # Enter IP and port on CLI
+			serPort = raw_input("Enter port (defaults to 1221): ")
+			if serPort == "":
+				serPort = "1221"
+			if serIP == "":
+				serIP = "0.0.0.0"
 
-    def __init__(self):
+			print "Connecting to {}:{}..".format(serIP, serPort),
 
-        
-   	print ("Client")
-    	serIP=raw_input("Enter IP: ")          #Enter IP and port on CLI
-	serPort=raw_input("Enter port: ")
-        print("Connecting")
-        if serIP == "1":
-           serIP = "10.42.0.45"
-        elif serIP == "2":
-           serIP = "172.24.136.242"
+			try:
+				cliObj = clientThread.ClientThread(str(serIP), int(serPort))
+			except Exception:
+				print("Failed.\nUnable to establish connection to server, please try again.")
+				sys.exit()
 
-        if serPort =="":
-           serPort = "1234"
-        cliObj = clientThread.ClientThread(str(serIP),int(serPort))
-	begin = cliObj.sock.recv(1024)
-        if begin == "begin":
-           print "Unpaused"
-           clientGame.ClientGame(cliObj.sock)
+			try:
+				begin = cliObj.sock.recv(1024)
+			except socket.error:
+				print 'Failed. Is the server running?'
+				sys.exit()
+			print("Done.\nPlease wait for the game to start.")
+			if begin == "begin":
+				clientGame.ClientGame(cliObj.sock)

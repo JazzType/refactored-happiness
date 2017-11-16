@@ -1,11 +1,11 @@
 import sys
 import time
 import json
-from constants import *
 from deck import *
 from player import *
 from result import *
 from operator import itemgetter
+import clientGame
 
 
 class ServerGame:
@@ -19,46 +19,43 @@ class ServerGame:
 			self.players[self.turn].do_fold()
 
 		else:
-
 			amount = self.players[self.turn].bet(receivedBetValue)
 			self.roundPot += amount
+
 			if self.players[self.turn].currentRoundBet > self.currentRoundBet:
 				self.currentRoundBet = self.players[self.turn].currentRoundBet
 				self.lastRaisedPlayer = self.turn
 
 	def init_round(self):
-
 		for i in range(self.numberOfPlayers):
 			self.players[i].currentRoundBet = 0
 
 		if self.infoFlag == 0:
 			self.currentRoundBet = self.bigBlind
-
 			temp1 = (self.start + 1) % self.numberOfPlayers
+
 			while self.players[temp1].isActive is False:
 				temp1 = (temp1 + 1) % self.numberOfPlayers
 
 			self.players[self.start].bet(self.smallBlind)
 			self.players[temp1].bet(self.bigBlind)
-
 			temp2 = (temp1 + 1) % self.numberOfPlayers
+
 			while self.players[temp2].isActive is False:
 				temp2 = (temp2 + 1) % self.numberOfPlayers
 			self.turn = temp2
 
 			self.roundPot = self.players[self.start].currentRoundBet + \
 				self.players[temp1].currentRoundBet
+
 		else:
 			self.currentRoundBet = 0
 			self.roundPot = 0
 			self.turn = self.start
 
 		self.lastRaisedPlayer = self.turn
-
 		self.toCallAmount = self.currentRoundBet - \
 			self.players[self.serverTurn].currentRoundBet
-
-		# update the gui?
 
 	def start_round(self):
 		self.init_round()
@@ -69,8 +66,6 @@ class ServerGame:
 		while True:
 			self.toCallAmount = self.currentRoundBet - \
 				self.players[self.serverTurn].currentRoundBet
-			# self.maxBet = min(self.maxPlayerMoney,self.players[self.serverTurn].money)
-
 			self.before_move()
 
 			if (not self.players[self.turn].fold) and self.players[self.turn].money != 0 and self.players[self.turn].isActive:
@@ -78,11 +73,10 @@ class ServerGame:
 				if self.turn == self.serverTurn:
 					recievedBetValue = self.server_move()  # server_move()
 				else:
-					self.client_move()
 					recievedBetValue = 0
 					try:
-						recievedBetValue = int(self.clientSockets[self.turn].recv(
-						1024))     # wait for client to move
+						recievedBetValue = int(
+							self.clientSockets[self.turn].recv(1024))  # Wait for client to move
 					except ValueError:
 						recievedBetValue = -1
 					except IndexError:
@@ -100,14 +94,15 @@ class ServerGame:
 			if self.turn == self.lastRaisedPlayer or self.numberOfUnfoldedPlayers <= 1:
 				break
 		self.fin_round()
-		# self.broadcast()
 
 	def fin_round(self):
 		self.pot += self.roundPot
 		self.roundPot = 0
 		self.numberOfUnfoldedPlayers = 0
+
 		for i in range(self.numberOfPlayers):
 			self.players[i].currentRoundBet = 0
+
 			if not self.players[i].fold and self.players[i].money != 0:
 				self.numberOfUnfoldedPlayers += 1
 
@@ -120,27 +115,14 @@ class ServerGame:
 		self.numberOfUnfoldedPlayers = self.numberOfActivePlayers
 		self.pot = 0
 		self.winCards = (self.deck.pop(), self.deck.pop())
-		# Initializing cards
 		self.cards = {0: []}
-
-		# Temp changes
-		#
-		# tempc = (self.deck.pop(),self.deck.pop())
-		# for cSock in self.clientSockets:
-		#     self.cards[cSock] = tempc
-		#     self.cards[i] = self.cards[cSock]
-		#     i += 1
-		# self.cards[self.serverTurn] = tempc#(self.deck.pop(),self.deck.pop()) #Server Cards
-		#
-		# self.myCards = self.cards[self.serverTurn]
-		#
-		# 3
 
 		i = 0
 		for cSock in self.clientSockets:
 			self.cards[cSock] = (self.deck.pop(), self.deck.pop())
 			self.cards[i] = self.cards[cSock]
 			i += 1
+
 		self.cards[self.serverTurn] = (
 			self.deck.pop(), self.deck.pop())  # Server Cards
 
@@ -150,29 +132,27 @@ class ServerGame:
 			self.players[i].pot = 0
 			self.players[i].fold = False
 
-		# self.initGuiFlag = False
-
 	def start_hand(self):
 		self.init_hand()
 
-		self.infoFlag = 0          # round 0
+		self.infoFlag = 0  # round 0
 		self.start_round()
 
 		self.tableCards.append(self.deck.pop())
 		self.tableCards.append(self.deck.pop())
 		self.tableCards.append(self.deck.pop())
-		self.infoFlag = 1         # round 1
+		self.infoFlag = 1  # round 1
 		self.start_round()
 
 		self.tableCards.append(self.deck.pop())
-		self.infoFlag = 2         # round 2
+		self.infoFlag = 2  # round 2
 		self.start_round()
 
 		self.tableCards.append(self.deck.pop())
-		self.infoFlag = 3         # round 3
+		self.infoFlag = 3  # round 3
 		self.start_round()
 
-		self.infoFlag = 10        # Result 10
+		self.infoFlag = 10  # Result 10
 		# print "Hand completed"
 		self.fin_hand()
 
@@ -192,8 +172,8 @@ class ServerGame:
 		while self.players[self.start].isActive is False:
 			self.start = (self.start + 1) % self.numberOfPlayers
 
-		self.turn = -1  # Added by safal
-		self.broadcast()          # Final broadcast, broadcast result
+		self.turn = -1
+		self.broadcast()  # Final broadcast, broadcast result
 		self.after_move()
 
 	def init_game(self):
@@ -230,7 +210,7 @@ class ServerGame:
 	def fin_game(self):
 		pass
 
-	def broadcast(self):   # infoFlag, client's cards, myTurn, players, tablecards, turn, numberOfPlayers, pot, toCallAmount
+	def broadcast(self):
 		i = 0
 		for cSock in self.clientSockets:
 			maxPlayerMoney = 0
@@ -247,7 +227,7 @@ class ServerGame:
 			msgPlayerCards = json.dumps(self.cards[cSock])
 			msgPlayers = json.dumps(self.players, default=lambda o: o.__dict__)
 			msgTableCards = json.dumps(self.tableCards)
-
+			print msgTableCards
 			toCallAmount = self.currentRoundBet - \
 				self.players[i].currentRoundBet
 			things = (
@@ -265,24 +245,24 @@ class ServerGame:
 				str(i) + "::" + msgPlayers + "::" + msgTableCards + \
 				"::" + msgThings + "::" + msgWinners
 			i += 1
-			# print completeMessage
 			try:
 				cSock.send(completeMessage)
 			except Exception:
 				print 'Player {} quit'.format(self.clientSockets.index(cSock) + 1)
 				self.clientSockets.__delitem__(self.clientSockets.index(cSock))
 
-			# print "Size of message sent : "+ str(sys.getsizeof(completeMessage)) +" bytes!"
-
 	def hand_result(self):
 		obj = Result()
 		handStrengths = []
 		extraMoney = {0: []}
 		moneyToGive = []
+
 		for i in range(self.numberOfPlayers):
 			moneyToGive.append(0.0)
+
 		for i in self.activePlayers:
 			extraMoney[i] = float(self.players[i].pot)
+
 			if not self.players[i].fold:
 				playerCards = self.tableCards[:]
 				playerCards.append(self.cards[i][0])
@@ -292,32 +272,30 @@ class ServerGame:
 
 		handPot = sorted(handStrengths, key=itemgetter(3), reverse=True)
 		handStrengths = sorted(handStrengths, key=itemgetter(1), reverse=True)
-
 		length = len(handStrengths)
+
 		for i in range(length - 1):
 			if handStrengths[i][1] == handStrengths[i + 1][1]:
 				comp = obj.hand_comparator(
 					handStrengths[i][2], handStrengths[i + 1][2])
+
 				if comp == 2:
 					handStrengths[i], handStrengths[i + 1] = handStrengths[i + 1], handStrengths[i]  # Swap
 
 		# Removes all from handPot who won't get any money
 		for i in range(length):
 			temp = handStrengths[i]
+
 			for j in range(length):
 				if handStrengths[j][3] >= handStrengths[i][3]:
-					if handStrengths[j][1] > handStrengths[i][1] or (handStrengths[j][1] == handStrengths[i][1] and obj.hand_comparator(handStrengths[j][2], handStrengths[i][2]) == 1):
-						# moneyToGive.append(0.0)
-						# extraMoney.append(temp[3])
+					if (handStrengths[j][1] > handStrengths[i][1]) or \
+						(handStrengths[j][1] == handStrengths[i][1] and
+							obj.hand_comparator(handStrengths[j][2], handStrengths[i][2]) == 1):
 						handPot.remove(temp)
 						break
 
 		handPot = sorted(handPot, key=itemgetter(3), reverse=True)
 		length = len(handPot)
-
-		# print handPot
-		# print length
-		# print extraMoney
 
 		self.handWinners = []
 		for i in range(length):
@@ -326,7 +304,6 @@ class ServerGame:
 		extraMoneyLength = len(extraMoney)
 
 		while self.pot != 0 and len(handPot) > 0:
-			# print "in loop 1"
 			length = len(handPot)
 			if length == 1:
 				# Last player may get some extra money
@@ -339,7 +316,7 @@ class ServerGame:
 					countEqual += 1
 				else:
 					break
-			# print countEqual
+
 			while True:
 				largestPot = handPot[0][3]
 				lessPot = 0
@@ -376,12 +353,7 @@ class ServerGame:
 		self.winCards = self.cards[self.handWinners[0]]
 		self.resultRating = handStrengths[0][1]
 
-	############################
-	# Code for GUI starts here #
-	############################
-
 	def init_gui(self):
-		# self.g = Graphics()
 		self.HANDBEGIN = False
 		self.CARDDRAWN = [False, False, False]
 
@@ -389,7 +361,7 @@ class ServerGame:
 		self.update_MONEY()
 
 		if not self.HANDBEGIN:
-			self.draw_init_cards(self.myCards, self.infoFlag)
+			self.draw_init_cards(self.myCards[:2], self.infoFlag)
 
 			for i in range(3):
 				self.CARDDRAWN[i] = False
@@ -400,10 +372,9 @@ class ServerGame:
 
 	def draw_init_cards(self, myCards, infoFlag):
 		if infoFlag == 0:
+			clientGame.cls()
 			print "\nNew Hand"
-			print "my cards:"
-			print myCards[0]
-			print myCards[1]
+			print clientGame.print_cards(myCards)
 
 	def server_move(self):
 		maxPlayerMoney = 0
@@ -433,12 +404,9 @@ class ServerGame:
 
 		elif move_input == "r" or move_input == "R":
 			raiseValue = int(raw_input(
-				"enter a no between " + str(self.toCallAmount) + " and " + str(self.maxBet) + ": "))
+				"enter amount between " + str(self.toCallAmount) + " and " + str(self.maxBet) + ": "))
 			state = raiseValue
 		return state
-
-	def client_move(self):
-		pass
 
 	def after_move(self):
 		if self.infoFlag == 10:
@@ -447,42 +415,27 @@ class ServerGame:
 		if self.infoFlag != 10:
 			return
 
-		print "Hand completed!"
-		print "Winners are : " + str(self.handWinners)
+		print "Hand complete!"
 
 		if self.handWinners[0] == len(self.clientSockets):
 			print 'You won this hand!'
+
 		else:
-			self.clientSockets[self.handWinners[0]].send('::')
+			try:
+				self.clientSockets[self.handWinners[0]].send('::')
+			except IndexError:
+				print "No other players left, terminating game!"
+				sys.exit()
+
 		self.HANDBEGIN = False
 
 		time.sleep(4)
-		# should we show other detals like cards won etc ??
-
-		# g.end_hand(screen, self.infoFlag, self.handWinners, self.winCards, self.resultRating)   #Result and winner display
-
-		# pygame.display.update()
 
 	def update_screen(self):
-
-		# print "Turn ", self.turn, "ExTurn ", self.exTurn
-		print "new turn"
-		'''g.draw_boy(screen, self.turn, self.myTurn, self.turn)    #Redrawing the current player's image
-		g.draw_boy_box(screen, self.turn, self.MONEY[self.turn], self.NAMES[self.turn])    # Redrawing current player's text box
-
-		g.draw_boy(screen, self.exTurn, self.myTurn, self.turn)   #Redrawing the last player's image'''
-
-		# g.draw_boy_box(screen, self.exTurn, self.MONEY[self.exTurn], self.NAMES[self.exTurn])   #Redrawing the last player's text box
-		# print "current round bet:"
-		for i in range(self.numberOfPlayers):
-			if self.ROUNDBET[i] != "$0":
-				print self.NAMES[i] + " : " + str(self.ROUNDBET[i])
-			# g.draw_boy_bet(screen, i, self.ROUNDBET[i])    #Draw every player's current round bet.
-
-		# g.draw_table_cards(screen, self.infoFlag, self.tableCards)    #Draw the cards to be placed on table.
 		if self.infoFlag == 1:
 			if not self.CARDDRAWN[0]:
-				print self.tableCards[0]
+				print 'TableCards len: ', len(self.tableCards)
+				clientGame.print_cards(self.tableCards[0])
 				print self.tableCards[1]
 				print self.tableCards[2]
 				self.CARDDRAWN[0] = True
@@ -491,10 +444,12 @@ class ServerGame:
 			if not self.CARDDRAWN[1]:
 				print self.tableCards[3]
 				self.CARDDRAWN[1] = True
+
 		elif self.infoFlag == 3:
 			if not self.CARDDRAWN[2]:
 				print self.tableCards[4]
 				self.CARDDRAWN[2] = True
+
 		elif self.infoFlag == 10:
 			for i in range(5):
 				print self.tableCards[i]
@@ -503,11 +458,9 @@ class ServerGame:
 
 		# Display pot
 		print "pot : " + str(self.pot)
-		# HAVE TO IMPLEMENT STILL
-		'''if self.pot>0 and self.pot-self.exPot>0:
-			g.pot_animation(screen, self.pot)'''
 
 	def update_MONEY(self):
+
 		self.NAMES = []
 		self.MONEY = []
 		self.ROUNDBET = []
@@ -516,10 +469,6 @@ class ServerGame:
 			self.MONEY.append("$" + str(self.players[i].money))
 			self.ROUNDBET.append("$" + str(self.players[i].currentRoundBet))
 
-	##########################
-	# Code for GUI ends here #
-	##########################
-
 
 def unpause_clients(clientSockets):
 	for obj in clientSockets:
@@ -527,19 +476,12 @@ def unpause_clients(clientSockets):
 
 
 def main(clientSockets):
-	# clients = [1,2,3]
 
 	unpause_clients(clientSockets)
-	# print "Inside serverGame file : Method main()"
-
 	game = ServerGame(clientSockets)
 	game.start_game()
-
 	time.sleep(5)
 	sys.exit()
-
-	# init(clientSockets)
-	# start_game()
 
 
 if __name__ == '__main__':
