@@ -103,6 +103,7 @@ class ClientGame:
 			wonHand = self.recv(clientSocket)
 			if wonHand is True:
 				print 'You won this hand!    '
+				sys.exit()
 			self.update_game()
 			print 'Please wait your turn.\r',
 			if self.myTurn == self.turn:

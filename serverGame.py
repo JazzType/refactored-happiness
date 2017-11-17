@@ -418,6 +418,7 @@ class ServerGame:
 
 		if self.handWinners[0] == len(self.clientSockets):
 			print 'You won this hand!    '
+			sys.exit()
 
 		else:
 			try:
