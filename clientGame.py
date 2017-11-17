@@ -122,7 +122,7 @@ class ClientGame:
 					state = self.maxBet
 
 				elif move_input == "r" or move_input == "R":
-					raiseValue = int(raw_input("Enter amount between " + str(self.toCallAmount) + " and " + str(self.maxBet) + ": "))
+					raiseValue = int(raw_input("Enter amount between " + str(abs(self.toCallAmount)) + " and " + str(abs(self.maxBet)) + ": "))
 					state = raiseValue
 
 				data = clientSocket.send(str(state))

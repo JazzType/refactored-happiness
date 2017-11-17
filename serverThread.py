@@ -11,7 +11,8 @@ class ServerThread(object):
 			self.clients = []
 
 			# Defining server address and port
-			self.host = ''
+			self.host = '127.0.0.1'
+			self.host = self.get_ip()
 			# Use port > 1024, below it all are reserved
 			self.port = random.randint(1024, 10000)
 
